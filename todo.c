@@ -80,7 +80,7 @@ int printUI () {
     	system ("clear");
         printf ("*** Help: ***\n\n");
         printf ("-> Type 'add <task name>' to add a task.\n");
-        printf ("-> Type 'remove <task number> to complete a task and remove it from the list.\n");
+        printf ("-> Type 'remove <task number>' to complete a task and remove it from the list.\n");
         printf ("-> Type 'history' to view commands used in current session.\n");
         printf ("-> Type 'exit' to save and exit.\n");
         return 0;

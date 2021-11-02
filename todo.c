@@ -154,6 +154,7 @@ int countTasks (FILE *fptr) {
 }
 
 int printTasksUI (LIST *tasks) {
+    system ("clear");
     printf ("*** Tasks to do ***\n\n");
     for (int i = 0; i < tasks->lineCount; i++) printf ("%d. %s\n", i + 1, (tasks->lines[i])->string);
     printf ("\ncommand> ");

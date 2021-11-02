@@ -277,7 +277,7 @@ int main () {
             freeLine (input);
             break;
         }
-        addLine (&history, input);
+        if (strcmp (input->string, "history") != 0) addLine (&history, input);
         commandCheck (input, &tasks, &history);
         freeLine (input);
     }

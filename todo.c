@@ -5,6 +5,12 @@
 
 #define BLOCK 10
 
+enum ERR_CODES {
+    MALLOC_FAIL = -1,
+    SUCCESS,
+    FAIL
+};
+
 typedef struct Line {
     char *string;
     int len;
@@ -78,7 +84,7 @@ int addLine (LIST **ptr, LINE *line) {
     // Realloc memory if insufficient
     if ((*ptr)->lineCount != 0 && (*ptr)->lineCount % BLOCK == 0) {
         LINE **temp = realloc ((*ptr)->lines, ((*ptr)->lineCount + BLOCK) * sizeof (LINE*));
-        if (!temp) return -1;
+        if (!temp) return MALLOC_FAIL;
         (*ptr)->lines = temp;
     }
 
@@ -88,20 +94,20 @@ int addLine (LIST **ptr, LINE *line) {
     if (!(temp2->string)) 
     {
         free (temp2);
-        return -1;
+        return MALLOC_FAIL;
     }
 
     // Store a copy of line in temp2
     temp2->len = line->len;
     strcpy (temp2->string, line->string);
     (*ptr)->lines[((*ptr)->lineCount)++] = temp2;
-    return 0;
+    return SUCCESS;
 }
 
 int freeLine (LINE *ptr) {
     free (ptr->string);
     free (ptr);
-    return 0;
+    return SUCCESS;
 }
 
 int deleteLine (LIST **ptr, int n) {
@@ -109,20 +115,21 @@ int deleteLine (LIST **ptr, int n) {
         freeLine ((*ptr)->lines[n]);
         for (int i = n; i < (*ptr)->lineCount - 1; i++) (*ptr)->lines[i] = (*ptr)->lines[i + 1];
         (*ptr)->lineCount--;
-        return 0;
+        return SUCCESS;
     }
-    return -1;
+    return FAIL;
 }
 
 int freeList (LIST *ptr) {
     for (int i = 0; i < ptr->lineCount; i++) freeLine (ptr->lines[i]);
     free (ptr->lines);
     free (ptr);
+    return SUCCESS;
 }
 
 int printLine (LINE *ptr) {
     printf ("%s\n", ptr->string);
-    return 0;
+    return SUCCESS;
 }
 
 int printHelp () {
@@ -134,10 +141,11 @@ int printHelp () {
         printf ("-> Type 'exit' to save and exit.\n");
         printf ("\nEnd of help.\nPress ENTER to go back..");
         getchar ();
-        return 0;
+        return SUCCESS;
 }
 
 int countTasks (FILE *fptr) {
+    if (!fptr) return FAIL;
     fptr = fopen ("tasks.txt", "r");
     int count = 0;
     for (char c = getc(fptr); c != EOF; c = getc(fptr)) if (c == '\n') count++;
@@ -149,7 +157,7 @@ int printTasksUI (LIST *tasks) {
     printf ("*** Tasks to do ***\n\n");
     for (int i = 0; i < tasks->lineCount; i++) printf ("%d. %s\n", i + 1, (tasks->lines[i])->string);
     printf ("\ncommand> ");
-    return 0;
+    return SUCCESS;
 }
 
 int printHistoryUI (LIST *history) {
@@ -158,24 +166,24 @@ int printHistoryUI (LIST *history) {
     for (int i = 0; i < history->lineCount; i++) printf ("-> %s\n", (history->lines[i])->string);
     printf ("\nEnd of history.\nPress ENTER to go back..");
     getchar ();
-    return 0;
+    return SUCCESS;
 }
 
 int invalidCommand () {
     printf ("\nInvalid command! (Try \"h\" for help)\nPress ENTER to try again..");
     getchar ();
-    return 0;
+    return SUCCESS;
 }
 
 int invalidNumber () {
     printf ("\nPlease enter a valid number! (Try \"h\" for help)\nPress ENTER to try again..");
     getchar ();
-    return 0;
+    return SUCCESS;
 }
 
 int add (LIST **ptr, LINE *input) {
     char *temp = malloc (input->len - 3);
-    if (!temp) return -1;
+    if (!temp) return MALLOC_FAIL;
 
     // Copy substring after "add" keyword
     strcpy (temp, (input->string) + 4);
@@ -184,7 +192,7 @@ int add (LIST **ptr, LINE *input) {
     temp2->len = input->len - 4;
     addLine (ptr, temp2);
     freeLine (temp2);
-    return 0;
+    return SUCCESS;
 }
 
 int rem (LIST **ptr, LINE *input, LIST **hptr) {
@@ -208,7 +216,7 @@ int rem (LIST **ptr, LINE *input, LIST **hptr) {
         temp2->string = malloc (((*ptr)->lines[n - 1])->len + 10);
         if (!(temp2->string)) {
             free (temp2);
-            return -1;
+            return MALLOC_FAIL;
         }
         strcpy (temp2->string, "removed: ");
         strcat (temp2->string, ((*ptr)->lines[n - 1])->string);
@@ -216,11 +224,11 @@ int rem (LIST **ptr, LINE *input, LIST **hptr) {
         addLine (hptr, temp2);
         freeLine (temp2);
         deleteLine (ptr, n - 1);
-        return 0;
+        return SUCCESS;
     }
     error:
         invalidNumber ();
-        return -1;
+        return FAIL;
 }
 
 int commandCheck (LINE *input, LIST **tasks, LIST **history) {
@@ -229,15 +237,17 @@ int commandCheck (LINE *input, LIST **tasks, LIST **history) {
     else if (strcmp (input->string, "history") == 0) printHistoryUI (*history);
     else if (strcmp (input->string, "h") == 0) printHelp ();
     else invalidCommand ();
-    return 0;
+    return SUCCESS;
 }
 
 int saveFile (FILE *fptr, LIST *tasks) {
+    
+    // Remove existing file and replace with modified file
     remove ("tasks.txt");
     fptr = fopen ("tasks.txt", "a+");
     for (int i = 0; i < tasks->lineCount; i++) fprintf (fptr, "%s\n", (tasks->lines[i])->string);
     fclose (fptr);
-    return 0;
+    return SUCCESS;
 }
 
 int main () {
@@ -275,5 +285,5 @@ int main () {
     freeList (tasks);
     freeList (history);
 
-    return 0;
+    return SUCCESS;
 }

@@ -1,7 +1,7 @@
 hey there
-try adding a command
-and then try removing some
-this program is great to use on the daily!
+try adding a task using "add <your_task>"
+and then try removing some using "remove <task_number>"
+this app is great to use on the daily!
 just bind it to a hotkey and you're good to go!!
-have a good one!
-everything is working fine!!
+have a good one!!
+use "h" to see list of available commands and usage instructions

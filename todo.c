@@ -3,7 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 
-#define BLOCK 10
+#define BLOCK 32
 
 enum ERR_CODES {
     MALLOC_FAIL = -1,
@@ -156,7 +156,8 @@ int countTasks (FILE *fptr) {
 int printTasksUI (LIST *tasks) {
     system ("clear");
     printf ("*** Tasks to do ***\n\n");
-    for (int i = 0; i < tasks->lineCount; i++) printf ("%d. %s\n", i + 1, (tasks->lines[i])->string);
+    if (tasks->lineCount == 0) printf ("-> No tasks here yet, add one with \"add <task>\".\n");
+    else for (int i = 0; i < tasks->lineCount; i++) printf ("%d. %s\n", i + 1, (tasks->lines[i])->string);
     printf ("\ncommand> ");
     return SUCCESS;
 }
@@ -164,8 +165,12 @@ int printTasksUI (LIST *tasks) {
 int printHistoryUI (LIST *history) {
     system ("clear");
     printf("*** History ***\n\n");
-    for (int i = 0; i < history->lineCount; i++) printf ("-> %s\n", (history->lines[i])->string);
-    printf ("\nEnd of history.\nPress ENTER to go back..");
+    if (history->lineCount == 0) printf ("No history yet.");
+    else {
+        for (int i = 0; i < history->lineCount; i++) printf ("-> %s\n", (history->lines[i])->string);
+        printf ("\nEnd of history.");
+    }
+    printf ("\nPress ENTER to go back..");
     getchar ();
     return SUCCESS;
 }
@@ -255,20 +260,36 @@ int main () {
 
     // Declare required pointers
     FILE *fptr;
-    LIST *tasks = createList ();
-    LIST *history = createList ();
+    LIST *tasks;
+    LIST *history;
     
     // Copy lines from file and store in buffer
     fptr = fopen ("tasks.txt", "r");
-    LINE *temp;
-    for (int i = 0; i < countTasks (fptr); i++) {
-        temp = getLine (fptr);
-        addLine (&tasks, temp);
-        freeLine (temp);
+    if (fptr) {
+
+        // Copy tasks from file to the list
+        tasks = createList ();
+        LINE *temp;
+        for (int i = 0; i < countTasks (fptr); i++) {
+            temp = getLine (fptr);
+            addLine (&tasks, temp);
+            freeLine (temp);
+        }
+        fclose (fptr);
     }
-    fclose (fptr);
-    
+
+    // Create new file if not found
+    else {
+        printf ("\"tasks.txt\" not found, do you want to create a new blank file? Press ENTER to continue or [Ctrl + C] to cancel..");
+        getchar ();
+        fptr = fopen ("tasks.txt", "a+");
+        fclose (fptr);
+        tasks = createList ();
+        system ("clear");
+    }
+
     // Start interactive loop
+    history = createList ();
     LINE *input;
     while (1) {
         printTasksUI (tasks);

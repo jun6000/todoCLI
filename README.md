@@ -1,12 +1,16 @@
 # todoCLI
 todoCLI - A simple todo app that runs in your terminal.
 
-## Installation (for Linux)
-  - Clone this repo.
-  - Run `cd todoCLI/`.
-  - And then run the pre-compiled executable with `./todo`.
+### Pre-requisites:
+`git`, `make`, a C-compiler (`gcc`, `clang`, etc.)
 
-  ![image](https://user-images.githubusercontent.com/76509148/140065907-f112847d-3d00-46db-8e6e-29a5a9efc8dd.png)
+## Installation (for linux)
+  - [Clone](https://git-scm.com/docs/git-clone) this repo.
+  - Run `cd todoCLI/`.
+  - And then run `make` to create the `todo` executable.
+  - Run the executable with `./todo`.
+
+  ![image](https://user-images.githubusercontent.com/76509148/140901078-eebf8c9a-c4ef-4faf-8197-a287ff466d67.png)
   ![image](https://user-images.githubusercontent.com/76509148/140066085-7b7e597f-ea85-4806-b958-4b5605774585.png)
 
 ### Note

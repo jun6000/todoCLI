@@ -1,6 +1,8 @@
 # todoCLI
 todoCLI - A simple todo app that runs in your terminal.
 
+Also check out [todoCLIplus](https://github.com/jun6000/todoCLIplus) a more feature-packed version of todoCLI written completely in C++.
+
 ### Pre-requisites:
 `git`, `make`, a C-compiler (`gcc`, `clang`, etc.)
 
